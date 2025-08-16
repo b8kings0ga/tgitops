@@ -10,15 +10,9 @@ spec:
       revision: HEAD
       files:
       - path: "envs/dev/sg/*/app.yaml"
-  # - clusterDecisionResource:
-  #     configMapRef: "acm-placement"
-  #     labelSelector:
-  #       matchLabels:
-  #         "cluster.open-cluster-management.io/placement": "dev-sg"
-  #     requeueAfterSeconds: 180
   template:
     metadata:
-      name: '{{path.basename}}-{{name}}-dev-service'
+      name: '{{ path.basename }}-dev-service'
     spec:
       project: "dev"
       source:
@@ -26,12 +20,15 @@ spec:
         targetRevision: HEAD
         path: charts/golden-charts
         helm:
+          ignoreMissingValueFiles: false
           valueFiles:
-          - '../../envs/dev/sg/*/values.yaml'
+          - '../../envs/dev/sg/my-app-a/app.yaml'
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: 'dev'
       syncPolicy:
+        syncOptions:
+        - CreateNamespace=true # Enables automatic namespace creation
         automated:
           prune: true
           selfHeal: true
