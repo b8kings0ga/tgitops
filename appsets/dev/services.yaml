@@ -22,7 +22,7 @@ spec:
         helm:
           ignoreMissingValueFiles: false
           valueFiles:
-          - '../../envs/dev/sg/my-app-a/app.yaml'
+          - '../../envs/dev/sg/my-app-a/values.yaml'
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: 'dev'
