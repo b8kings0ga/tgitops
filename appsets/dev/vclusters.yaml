@@ -1,27 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: dev-services
+  name: dev-vclusters
   namespace: argocd
 spec:
   generators:
   - git:
       repoURL: https://github.com/b8kings0ga/tgitops.git
       revision: HEAD
-      directories:
-      - path: "envs/dev/sg/*"
+      files:
+      - path: "vclusters/dev/sg/*/vcluster.yaml"
   template:
     metadata:
-      name: '{{path.basename}}-dev-service'
+      name: '{{path.basename}}'
     spec:
-      project: "dev"
+      project: "default"
       source:
-        repoURL: https://github.com/b8kings0ga/tgitops.git
-        targetRevision: HEAD
-        path: charts/golden-charts
+        chart: vcluster
+        repoURL: https://charts.loft.sh
         helm:
+          releaseName: '{{path.basename}}'
           valueFiles:
-          - "{{path}}/values.yaml"
+          - "{{path}}/vcluster.yaml"
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{path.basename}}'
