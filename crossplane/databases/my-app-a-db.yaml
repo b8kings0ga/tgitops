@@ -1,0 +1,12 @@
+apiVersion: "sql.crossplane.io/v1alpha1"
+kind: "PostgreSQLInstance"
+metadata:
+  name: "my-app-a-db"
+  namespace: "crossplane-system"
+spec:
+  forProvider:
+    location: "us-east-1"
+    engineVersion: "13"
+  writeConnectionSecretToRef:
+    name: "my-app-a-db-conn"
+    namespace: "my-app-a"

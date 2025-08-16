@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev-crossplane
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/b8kings0ga/tgitops.git
+      revision: HEAD
+      files:
+      - path: "crossplane/databases/*.yaml"
+  template:
+    metadata:
+      name: '{{path.basename}}-db'
+    spec:
+      project: "default"
+      source:
+        repoURL: https://github.com/b8kings0ga/tgitops.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'crossplane-system'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

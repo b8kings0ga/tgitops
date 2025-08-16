@@ -1,0 +1,18 @@
+apiVersion: "vcluster.loft.sh/v1beta1"
+kind: "VirtualCluster"
+metadata:
+  name: "dev-vcluster"
+  namespace: "vcluster-dev"
+spec:
+  helmRelease:
+    chart:
+      name: "vcluster"
+      repo: "https://charts.loft.sh"
+      version: "0.15.0"
+    values: |
+      syncer:
+        extraArgs:
+        - --tls-san=dev-vcluster.vcluster-dev.svc
+      sync:
+        ingresses:
+          enabled: true
