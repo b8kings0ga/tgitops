@@ -32,7 +32,7 @@ def init(
         print("Error: Not a git repository or no remote 'origin' found.", file=sys.stderr)
         raise typer.Exit(code=1)
 
-    values_file_path = os.path.join("envs", env, region, "app.yaml")
+    values_file_path = os.path.join("../../","envs", env, region, "app.yaml")
 
     app_name = f"root-{env}-{region}"
     application = {

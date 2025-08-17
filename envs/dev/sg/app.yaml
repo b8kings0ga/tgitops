@@ -1,1 +1,4 @@
 # this is for the values of bootstrap chart will use
+
+env: dev
+region: sg
