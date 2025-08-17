@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: dev-services
+  name: '{{ .Values.env }}-services'
   namespace: argocd
 spec:
   generators:
@@ -9,12 +9,12 @@ spec:
       repoURL: https://github.com/b8kings0ga/tgitops.git
       revision: HEAD
       files:
-      - path: "envs/dev/sg/*/app.yaml"
+      - path: "envs/{{ .Values.env }}/{{ .Values.region }}/*/app.yaml"
   template:
     metadata:
-      name: '{{ path.basename }}-dev-service'
+      name: '{{`{{ path.basename }}`}}-{{ .Values.env }}-service'
     spec:
-      project: "dev"
+      project: "{{ .Values.env }}"
       source:
         repoURL: https://github.com/b8kings0ga/tgitops.git
         targetRevision: HEAD
@@ -22,10 +22,10 @@ spec:
         helm:
           ignoreMissingValueFiles: false
           valueFiles:
-          - '../../envs/dev/sg/my-app-a/values.yaml'
+          - '../../envs/{{ .Values.env }}/{{ .Values.region }}/{{`{{ name }}`}}/values.yaml'
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: 'dev'
+        namespace: '{{ .Values.env }}'
       syncPolicy:
         syncOptions:
         - CreateNamespace=true # Enables automatic namespace creation

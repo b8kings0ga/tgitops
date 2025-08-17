@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: dev-crossplane
+  name: '{{ .Values.env }}-crossplane'
 spec:
   generators:
   - git:

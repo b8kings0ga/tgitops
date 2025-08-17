@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: dev-vclusters
+  name: '{{ .Values.env }}-vclusters'
   namespace: argocd
 spec:
   generators:
@@ -9,22 +9,22 @@ spec:
       repoURL: https://github.com/b8kings0ga/tgitops.git
       revision: HEAD
       files:
-      - path: "vclusters/dev/sg/*/vcluster.yaml"
+      - path: "vclusters/{{ .Values.env }}/{{ .Values.region }}/*/vcluster.yaml"
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{`{{path.basename}}`}}'
     spec:
       project: "default"
       source:
         chart: vcluster
         repoURL: https://charts.loft.sh
         helm:
-          releaseName: '{{path.basename}}'
+          releaseName: '{{`{{path.basename}}`}}'
           valueFiles:
-          - "{{path}}/vcluster.yaml"
+          - "{{`{{path}}`}}/vcluster.yaml"
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
+        namespace: '{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
           prune: true

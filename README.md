@@ -11,23 +11,21 @@ The directory structure is as follows:
 ```
 .
 ├── envs/
-│   └── dev/
-│       └── us-east-1/
-│           └── my-app-a/
-│               └── values.yaml
-├── appsets/
-│   └── dev/
-│       ├── services.yaml
-│       └── crossplane.yaml
-├── crossplane/
-│   └── databases/
-│       └── my-app-a-db.yaml
-├── vclusters/
-│   └── dev-vcluster-manifest.yaml
-├── charts/
-│   └── golden-charts/
-│       └── Chart.yaml
-└── README.md
+│   ├── dev/
+│   │   ├── us-east-1/
+│   │   │   ├── apps/
+│   │   │   │   └── my-app-a/
+│   │   │   │       └── values.yaml
+│   │   │   ├── crossplane/
+│   │   │   │   └── my-app-a-db/
+│   │   │   │       └── postgres.yaml
+│   │   │   └── vclusters/
+│   │   │       └── my-team-a-vcluster/
+│   │   │           └── vcluster-manifest.yaml
+│   │   └── eu-west-1/
+│   │       └── ...
+│   └── prod/
+│       └── ...
 ```
 
 For demo purposes, we have a single `dev` environment in `us-east-1` with a single application `my-app-a`.
