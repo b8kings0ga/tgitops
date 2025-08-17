@@ -1,22 +1,33 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: "{{ .Values.env }}-db"
+  name: "{{ .Values.env }}-crossplane"
   namespace: "argocd"
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
-  project: "default"
-  source:
-    repoURL: https://github.com/b8kings0ga/tgitops.git
-    targetRevision: HEAD
-    path: "envs/{{ .Values.env }}/{{ .Values.region }}/crossplane/db"
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: "{{ .Values.env }}-db"
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-    - CreateNamespace=true
+  generators:
+  - git:
+      repoURL: https://github.com/b8kings0ga/tgitops.git
+      revision: HEAD
+      directories:
+      - path: "envs/{{ .Values.env }}/{{ .Values.region }}/crossplane/*"
+  template:
+    metadata:
+      name: "{{ .Values.env }}-{{`{{path.basename}}`}}"
+      namespace: "argocd"
+      annotations:
+        argocd.argoproj.io/sync-wave: "2"
+    spec:
+      project: "default"
+      source:
+        repoURL: https://github.com/b8kings0ga/tgitops.git
+        targetRevision: HEAD
+        path: "{{`{{path}}`}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{ .Values.env }}-{{`{{path.basename}}`}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
