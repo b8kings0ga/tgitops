@@ -9,7 +9,7 @@ spec:
       repoURL: https://github.com/b8kings0ga/tgitops.git
       revision: HEAD
       files:
-      - path: "envs/{{ .Values.env }}/{{ .Values.region }}/*/app.yaml"
+      - path: "envs/{{ .Values.env }}/{{ .Values.region }}/services/*/app.yaml"
   template:
     metadata:
       name: '{{`{{ path.basename }}`}}-{{ .Values.env }}-service'
