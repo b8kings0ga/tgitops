@@ -1,0 +1,110 @@
+#!/opt/homebrew/bin/uv run -q --script
+# /// script
+# name = "envs"
+# dependencies = [
+#    "typer",
+#    "ruamel.yaml"
+# ]
+# ///
+
+import typer
+import subprocess
+import sys
+from ruamel.yaml import YAML
+import os
+from io import StringIO
+
+def init(
+    env: str = typer.Option("dev", help="The environment to deploy to."),
+    region: str = typer.Option("sg", help="The region to deploy to."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print the manifest without applying it."),
+):
+    """
+    Generates and applies an ArgoCD Application manifest for the specified environment and region.
+    """
+    try:
+        repo_url_ssh = subprocess.check_output(["git", "config", "--get", "remote.origin.url"]).strip().decode("utf-8")
+        if repo_url_ssh.startswith("git@"):
+            repo_url = repo_url_ssh.replace(":", "/").replace("git@", "https://")
+        else:
+            repo_url = repo_url_ssh
+    except subprocess.CalledProcessError:
+        print("Error: Not a git repository or no remote 'origin' found.", file=sys.stderr)
+        raise typer.Exit(code=1)
+
+    values_file_path = os.path.join("envs", env, region, "app.yaml")
+
+    app_name = f"root-{env}-{region}"
+    application = {
+        "apiVersion": "argoproj.io/v1alpha1",
+        "kind": "Application",
+        "metadata": {
+            "name": app_name,
+            "namespace": "argocd",
+            "finalizers": ["resources-finalizer.argocd.argoproj.io"],
+        },
+        "spec": {
+            "project": "default",
+            "source": {
+                "repoURL": repo_url,
+                "path": "charts/bootstrap",
+                "targetRevision": "HEAD",
+                "helm": {
+                    "valueFiles": [
+                        values_file_path,
+                    ]
+                },
+            },
+            "destination": {
+                "server": "https://kubernetes.default.svc",
+                "namespace": "default",
+            },
+            "syncPolicy": {
+                "automated": {
+                    "prune": True,
+                    "selfHeal": True,
+                },
+                "syncOptions": ["CreateNamespace=true"],
+            },
+        },
+    }
+
+    yaml = YAML()
+    yaml.indent(mapping=2, sequence=4, offset=2)
+    string_stream = StringIO()
+    yaml.dump(application, string_stream)
+    yaml_manifest = string_stream.getvalue()
+
+    print("Generated ArgoCD Application manifest:")
+    print("-" * 40)
+    print(yaml_manifest)
+    print("-" * 40)
+
+    if dry_run:
+        print("Dry run enabled. Skipping kubectl apply.")
+        raise typer.Exit()
+
+    if subprocess.run(["which", "kubectl"], capture_output=True, check=False).returncode != 0:
+        print("Error: kubectl command not found. Please install kubectl.", file=sys.stderr)
+        raise typer.Exit(code=1)
+
+    print(f"Applying manifest for env '{env}' and region '{region}'...")
+    process = subprocess.Popen(
+        ["kubectl", "apply", "-f", "-"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    stdout, stderr = process.communicate(input=yaml_manifest)
+
+    if process.returncode == 0:
+        print("✅ ArgoCD Application applied successfully.")
+        print(stdout)
+    else:
+        print("❌ Error applying ArgoCD Application:", file=sys.stderr)
+        print(stderr, file=sys.stderr)
+        raise typer.Exit(code=1)
+
+if __name__ == "__main__":
+    typer.run(init)
