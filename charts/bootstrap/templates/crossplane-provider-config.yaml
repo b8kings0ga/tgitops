@@ -1,0 +1,47 @@
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: InjectedIdentity
+  endpoint:
+    hostname: localstack.localstack.svc
+    port: 4566
+    region: ap-southeast-1
+    services:
+    - s3
+    - sqs
+    - sns
+    - dynamodb
+    - lambda
+    - rds
+    - ec2
+    - iam
+    - cloudwatch
+    - apigateway
+    - secretsmanager
+    - ssm
+    - sts
+    - kinesis
+    - kms
+    - route53
+    - cloudformation
+    - ecr
+    - ecs
+    - eks
+    - elasticache
+    - elasticsearch
+    - elb
+    - elbv2
+    - iam
+    - rds
+    - s3
+    - secretsmanager
+    - sns
+    - sqs
+    - ssm
+    - sts
+    - vpc
+  insecure: true
+  skipCredsValidation: true
