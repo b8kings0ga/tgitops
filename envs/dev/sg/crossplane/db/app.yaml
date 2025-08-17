@@ -1,0 +1,37 @@
+apiVersion: "tgitops.b8kings.dev/v1"
+kind: "XStack"
+metadata:
+  name: "dev-sg-db"
+spec:
+  region: "ap-southeast-1"
+  # deletionPolicy: Delete
+  # tags:
+  #   - key: "env"
+  #     value: "dev"
+  #   - key: "region"
+  #     value: "sg"
+  #   - key: "service"
+  #     value: "db"
+  # vpc:
+  #   cidrBlock: "10.0.0.0/16"
+  #   enableDnsHostnames: true
+  #   enableDnsSupport: true
+  #   instanceTenancy: "default"
+  #   subnets:
+  #     - cidrBlock: "10.0.1.0/24"
+  #       availabilityZone: "ap-southeast-1a"
+  #       mapPublicIpOnLaunch: true
+  #     - cidrBlock: "10.0.2.0/24"
+  #       availabilityZone: "ap-southeast-1b"
+  #       mapPublicIpOnLaunch: true
+  # rds:
+  #   - name: "dev-sg-db"
+  #     engine: "postgres"
+  #     engineVersion: "13.4"
+  #     instanceClass: "db.t3.micro"
+  #     allocatedStorage: 20
+  #     skipFinalSnapshot: true
+  #     dbName: "dev"
+  #     dbSubnetGroupName: "dev-sg-db"
+  #     vpcSecurityGroupIds:
+  #       - "sg-0"

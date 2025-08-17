@@ -1,27 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
+kind: Application
 metadata:
-  name: '{{ .Values.env }}-crossplane'
+  name: "{{ .Values.env }}-db"
+  namespace: "argocd"
 spec:
-  generators:
-  - git:
-      repoURL: https://github.com/b8kings0ga/tgitops.git
-      revision: HEAD
-      files:
-      - path: "crossplane/databases/*.yaml"
-  template:
-    metadata:
-      name: '{{path.basename}}-db'
-    spec:
-      project: "default"
-      source:
-        repoURL: https://github.com/b8kings0ga/tgitops.git
-        targetRevision: HEAD
-        path: '{{path}}'
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: 'crossplane-system'
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
+  project: "default"
+  source:
+    repoURL: https://github.com/b8kings0ga/tgitops.git
+    targetRevision: HEAD
+    path: "envs/{{ .Values.env }}/{{ .Values.region }}/crossplane/db"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: "{{ .Values.env }}-db"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
